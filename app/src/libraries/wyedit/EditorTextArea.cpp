@@ -37,6 +37,8 @@ EditorTextArea::EditorTextArea(QWidget *parent) : QTextEdit(parent)
 
  // Разрешение принимать жест QTapAndHoldGesture
  grabGesture(Qt::TapAndHoldGesture);
+
+ setCursorWidth(2);
 }
 
 
@@ -405,7 +407,7 @@ void EditorTextArea::paintEvent(QPaintEvent *event)
     p.drawLine(rect.left()+w, y2, rect.left()+w, y1);
 
     p.drawLine(rect.left(), y2, rect.left()+w/2, y2-h/2);
-    p.drawLine(rect.left(), y2, rect.left()+w/2, y2+h/2);    
+    p.drawLine(rect.left(), y2, rect.left()+w/2, y2+h/2);
    }
 
 
