@@ -1188,6 +1188,55 @@ void Editor::onCursorPositionChanged(void)
 }
 
 
+static QString pmarks {",.!:[]()"};
+static QString fix_spaces {" \t"};
+QString fix_pmarks(const QString s)
+{
+	QString res;
+	QString spaces;
+	QChar last_char, next_char;
+
+	for(int i = 0; i < s.length(); i++) {
+		if (res.length() > 0) {
+			last_char = res.back();
+		} else {
+			last_char = 0;
+		}
+		if (i < s.length() - 1) {
+			next_char = s.at(i + 1);
+		} else {
+			next_char = 0;
+		}
+
+		if (fix_spaces.contains(s.at(i))) {
+			spaces += s.at(i);
+			continue;
+		}
+
+		if (pmarks.contains(s.at(i))) {
+			if (pmarks.contains(next_char)) {
+				res += s.at(i);
+			} else {
+				res += s.at(i) + ' ';
+			}
+		} else {
+			if (!spaces.isEmpty() && !res.isEmpty()
+				&& !fix_spaces.contains(last_char)
+				&& !pmarks.contains(last_char)) {
+				res += ' ' + s.at(i);
+			} else {
+				res += s.at(i);
+			}
+		}
+		spaces.clear();
+	}
+	if (res.back() == ' ') {
+		res.chop(1);
+	}
+	return res;
+}
+
+
 // Событие отлавливает нажатия клавиш
 void Editor::keyPressEvent(QKeyEvent *event)
 {
@@ -1220,6 +1269,14 @@ void Editor::keyPressEvent(QKeyEvent *event)
 		cursor.movePosition(QTextCursor::EndOfLine
 			, QTextCursor::KeepAnchor);
 		textArea->setTextCursor(cursor);
+
+	} else if (QGuiApplication::keyboardModifiers().testFlag(Qt::ControlModifier)
+		&& (event->key() == Qt::Key_0)) {
+
+		if (textArea->textCursor().hasSelection()) {
+			textArea->insertPlainText( fix_pmarks(
+				textArea->textCursor().selectedText()) );
+		}
 
 	}
 

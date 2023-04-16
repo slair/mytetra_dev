@@ -327,6 +327,7 @@ void Downloader::onFileDownloadFinished(QNetworkReply *reply)
         {
           file.write( reply->readAll() );
           file.close();
+			qDebug() << fileName << "saved.";
         }
         else
           showMessageBox( tr("Has problem with save file to directory %1").arg(saveDirectory) );
